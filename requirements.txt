@@ -1,0 +1,7 @@
+streamlit
+pymupdf
+langchain-ollama
+langchain-text-splitters
+langchain-core
+requests
+nltk

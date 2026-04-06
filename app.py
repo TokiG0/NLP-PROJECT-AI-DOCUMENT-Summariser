@@ -102,6 +102,11 @@ if uploaded_file:
         st.error("❌ **Ollama server not detected.**")
         st.info("Run `ollama serve` and ensure you have pulled the model (`ollama pull llama3`).")
     else:
+        # Initialize variables for cross-block access
+        raw_text = None
+        cleaned_text = None
+        final_summary = None
+        
         with st.status("Analyzing Document...", expanded=True) as status:
             # 1. Extraction
             st.write("📥 Extracting PDF content...")
@@ -163,19 +168,20 @@ if uploaded_file:
 
                 status.update(label="Summarization Complete!", state="complete", expanded=False)
                 
-                # --- Display Results ---
-                st.divider()
-                st.subheader(f"📄 Analysis: {uploaded_file.name}")
-                
-                # Show cleaning stats
-                with st.expander("Show NLP Stats"):
-                    st.write(f"Original Characters: {len(raw_text)}")
-                    st.write(f"Preprocessed Characters: {len(cleaned_text)}")
-                    st.write(f"Reduction through normalization: {((len(raw_text)-len(cleaned_text))/len(raw_text))*100:.2f}%")
-                
-                st.markdown(final_summary)
-            else:
-                st.warning("The PDF is empty or has too little text.")
+        # --- Display Results ---
+        if final_summary:
+            st.divider()
+            st.subheader(f"📄 Analysis: {uploaded_file.name}")
+            
+            # Show cleaning stats
+            with st.expander("Show NLP Stats"):
+                st.write(f"Original Characters: {len(raw_text)}")
+                st.write(f"Preprocessed Characters: {len(cleaned_text)}")
+                st.write(f"Reduction through normalization: {((len(raw_text)-len(cleaned_text))/len(raw_text))*100:.2f}%")
+            
+            st.markdown(final_summary)
+        elif raw_text is not None:
+            st.warning("The PDF is empty or has too little text.")
 else:
     st.info("👈 Upload a legal document in the sidebar to begin.")
     st.markdown("---")
